@@ -16,3 +16,15 @@
   - Selector：根据变更文件和依赖关系图进行测试用例选择
   - Graph：依赖图类
   - ClassMethodPair：class-method对类，在该项目中用于存放所有测试用例的class-method对
+
+- 大体思路：
+  - 1.运行jar包时，参数从Start的main函数里传进来，在main中进行参数的分析，得到选择类型（类级或方法级）、项目路径和变更文件路径，之后调用Start的initialize方法遍历项目路径得到所有.class文件的路径，用于下一步构建分析域
+  - 2.调用SomeClass的loadClass方法构建分析域
+  - 3.调用MakeGraph的analysis方法遍历所有类和所有方法构建依赖图
+      •用CHA算法来构建调用图
+      •用getPreNodes方法获得某节点的所有前驱节点，从而找到依赖关系
+      •MakeGraph的draw方法调用Graph的makeDotFile方法生成相应的dot文件
+      •返回类/方法依赖图和所有测试用例的class-method对，进入下一步测试选择过程
+  - 4.调用Selector的decodeChange方法解析变更文件，最后根据选择类型调用exec_class_select或exec_method_select来进行类级/方法级测试用例选择，并输出最后的选择结果
+  
+### 我用的是JAVA11，所以在助教的电脑上打开我的项目代码时可能会出现爆红现象，然后pom.xml的WALA依赖也有可能下载不下来（我也不知道为什么55），但是在我的电脑上是没有任何问题的，项目也能正常调试和运行。所以如果助教那边出现爆红的话麻烦助教处理一下（应该只是配置不同的问题），或者助教不介意爆红的话直接看也没问题。
